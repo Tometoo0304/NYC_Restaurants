@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checjout repository content
+      - name: Checkout repository content
         uses: actions/checkout@v2 #Checkout the repository content to github runner
 
       - name: Setup Python Version
@@ -25,7 +25,7 @@ jobs:
       - name: Execute Python Script
         env:
           JSON_SECRET: ${{ secrets.JSON_SECRET }}
-        run: python data_update.py
+        run: /opt/hostedtoolcache/Python/3.9.18/x64/bin/python data_update.py
 
       - name: commit files
         run: |
