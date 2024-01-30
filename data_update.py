@@ -188,7 +188,6 @@ try:
     json_file = os.environ["JSON_SECRET"]
 except KeyError:
     json_file = "Json File Not Available"
-print(json_file)
 SCOPES = ('https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive')
 credentials = service_account.Credentials.from_service_account_info(json.loads(json_file, strict=False), scopes=SCOPES)
 gc = pygsheets.authorize(custom_credentials=credentials)
