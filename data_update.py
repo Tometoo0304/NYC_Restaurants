@@ -157,7 +157,11 @@ def gradable_inspection(df):
     return gradable_inspections
                 
 def data_preprocessing(df):
-    gs = pygsheets.authorize(service_file="C:/Users/wangj/Desktop/data/banded-oven-412622-bcdb12f463f1.json")
+    try:
+        json_file = os.environ["JSON_SECRET"]
+    except KeyError:
+        json_file = "Json File Not Available"
+    gs = pygsheets.authorize(service_file=json_file)
     workbook = gs.open('nyc_restaurant_inspections') 
     prev_restaurant = workbook[0].get_as_df(numerize=False)
     prev_restaurant = prev_restaurant.replace("", np.nan)
@@ -184,8 +188,11 @@ processed_data = data_preprocessing(restaurant_inspection)
 restaurant = processed_data[0]
 violation = processed_data[1]
 
-
-gs = pygsheets.authorize(service_file="C:/Users/wangj/Desktop/data/banded-oven-412622-bcdb12f463f1.json")
+try:
+    json_file = os.environ["JSON_SECRET"]
+except KeyError:
+    json_file = "Json File Not Available"
+gs = pygsheets.authorize(service_file=json_file)
 workbook = gs.open('nyc_restaurant_inspections')
 for worksheet in workbook:
     worksheet.clear()
