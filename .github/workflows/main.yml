@@ -22,6 +22,12 @@ jobs:
         with:
           path: "requirements.txt"
 
+      - name: Print working directory
+        run: pwd
+        
+      - name: List contents of the directory
+        run: ls -R
+        
       - name: Execute Python Script
         env:
           JSON_SECRET: ${{ secrets.JSON_SECRET }}
