@@ -25,7 +25,7 @@ jobs:
       - name: Execute Python Script
         env:
           JSON_SECRET: ${{ secrets.JSON_SECRET }}
-        run: data_update.py
+        run: python data_update.py
 
       - name: commit files
         run: |
