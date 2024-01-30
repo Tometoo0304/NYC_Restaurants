@@ -13,19 +13,19 @@ jobs:
         uses: actions/checkout@v2 #Checkout the repository content to github runner
 
       - name: Setup Python Version
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.9
 
       - name: Install Python Packages
-        uses: py-actions/py-dependency-install@v2
+        uses: py-actions/py-dependency-install@v4
         with:
           path: "requirements.txt"
 
       - name: Execute Python Script
         env:
           JSON_SECRET: ${{ secrets.JSON_SECRET }}
-        run: /opt/hostedtoolcache/Python/3.9.18/x64/bin/python data_update.py
+        run: python data_update.py
 
       - name: commit files
         run: |
