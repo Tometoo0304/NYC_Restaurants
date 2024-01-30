@@ -3,6 +3,8 @@
 
 import os
 import pygsheets
+from google.oauth2 import service_account
+import json
 import requests
 import pandas as pd
 import numpy as np
@@ -159,13 +161,8 @@ def gradable_inspection(df):
     gradable_inspections.loc[gradable_inspections["grade"].isin(["Z","P"]),"grade"] = "Grade Pending"
     return gradable_inspections
                 
-def data_preprocessing(df):
-    try:
-        json_file = os.environ["JSON_SECRET"]
-    except KeyError:
-        json_file = "Json File Not Available"
-    gs = pygsheets.authorize(service_file=json_file)
-    workbook = gs.open('nyc_restaurant_inspections') 
+def data_preprocessing(df, gc):
+    workbook = gc.open('nyc_restaurant_inspections') 
     prev_restaurant = workbook[0].get_as_df(numerize=False)
     prev_restaurant = prev_restaurant.replace("", np.nan)
     prev_restaurant[["latitude","longitude"]] = prev_restaurant[["latitude","longitude"]].astype(float)
@@ -187,16 +184,18 @@ def data_preprocessing(df):
 
 
 restaurant_inspection = restaurant_data()
-processed_data = data_preprocessing(restaurant_inspection)
-restaurant = processed_data[0]
-violation = processed_data[1]
-
 try:
     json_file = os.environ["JSON_SECRET"]
 except KeyError:
     json_file = "Json File Not Available"
-gs = pygsheets.authorize(service_file=json_file)
-workbook = gs.open('nyc_restaurant_inspections')
+SCOPES = ('https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive')
+credentials = service_account.Credentials.from_service_account_info(json.loads(json_file), scopes=SCOPES)
+gc = pygsheets.authorize(custom_credentials=credentials)
+processed_data = data_preprocessing(restaurant_inspection, gc)
+restaurant = processed_data[0]
+violation = processed_data[1]
+
+workbook = gc.open('nyc_restaurant_inspections')
 for worksheet in workbook:
     worksheet.clear()
 workbook[0].set_dataframe(restaurant, start = 'A1', nan = "")
