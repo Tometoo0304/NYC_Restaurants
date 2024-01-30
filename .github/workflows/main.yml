@@ -1,4 +1,4 @@
-name: NYC Restaurant Inspections Update 
+name: NYC Restaurant Inspection Data Update 
 
 on:
   schedule:
