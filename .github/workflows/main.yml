@@ -27,14 +27,4 @@ jobs:
           JSON_SECRET: ${{ secrets.JSON_SECRET }}
         run: python data_update.py
 
-      - name: commit files
-        run: |
-          git config --local user.name Tometoo0304
-          git config --local user.email "jw4311@columbia.edu"
-          git add --all
-          git commit -am "GH ACTION Headlines $(date)"
-          git push origin main
-        env:
-          REPO_KEY: ${{ secrets.GITHUB_TOKEN }}
-          username: github-actions
           
