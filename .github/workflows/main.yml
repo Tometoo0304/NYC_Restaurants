@@ -1,1 +1,40 @@
 name: NYC Restaurant Inspections Update 
+
+on:
+  schedule:
+  - cron: "0 3 * * *"
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checjout repository content
+        uses: actions/checkout@v2 #Checkout the repository content to github runner
+
+      - name: Setup Python Version
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install Python Packages
+        uses: py-actions/py-dependency-install@v2
+        with:
+          path: "requirements.txt"
+
+      - name: Execute Python Script
+        env:
+          JSON_SECRET: ${{ secrets.JSON_SECRET }}
+        run: data_update.py
+
+      - name: commit files
+        run: |
+          git config --local user.name Tometoo0304
+          git config --local user.email "jw4311@columbia.edu"
+          git add --all
+          git commit -am "GH ACTION Headlines $(date)"
+          git push origin main
+        env:
+          REPO_KEY: ${{ secrets.GITHUB_TOKEN }}
+          username: github-actions
+          
