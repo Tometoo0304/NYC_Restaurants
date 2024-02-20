@@ -162,6 +162,35 @@ def gradable_inspection(df):
     return gradable_inspections
                 
 def data_preprocessing(df, gc):
+    def custom_title(input_str, preserve_chars):
+        words = input_str.split()
+        result = []
+        for word in words:
+            if any(char.isalpha() for char in word):
+                preserved_word = ''.join(char if char in preserve_chars else char.lower() for char in word)
+                result.append(preserved_word.capitalize())
+            else:
+                result.append(word)
+        return ' '.join(result)
+
+    def img_link(grade):
+        if grade == "A":
+            img_src = "https://a816-health.nyc.gov/ABCEatsRestaurants/Content/images/NYCRestaurant_A.svg"
+        elif grade == "B":
+            img_src = "https://a816-health.nyc.gov/ABCEatsRestaurants/Content/images/NYCRestaurant_B.svg"
+        elif grade == "C":
+            img_src = "https://a816-health.nyc.gov/ABCEatsRestaurants/Content/images/NYCRestaurant_C.svg"
+        elif grade == "Grade Pending":
+            img_src = "https://a816-health.nyc.gov/ABCEatsRestaurants/Content/images/NYCRestaurant_GP.svg"
+        else:
+            img_src = "https://a816-health.nyc.gov/ABCEatsRestaurants/Content/images/NYCRestaurant_NG.svg"
+        return img_src
+    
+    def street_name_converter(street):
+        words = street.split()
+        corrected_words = [word.capitalize() if word.isalpha() else word.replace("ST","st").replace("Nd","nd").replace("Rd","rd").replace("Th","th") for word in words]
+        return ' '.join(corrected_words)
+        
     workbook = gc.open('nyc_restaurant_inspections') 
     prev_restaurant = workbook[0].get_as_df(numerize=False)
     prev_restaurant = prev_restaurant.replace("", np.nan)
@@ -176,6 +205,10 @@ def data_preprocessing(df, gc):
     gradable_inspections = gradable_inspection(df)
     restaurant = pd.merge(restaurant, gradable_inspections[["permit_number","grade"]],on="permit_number",how="left")
     restaurant["grade"] = restaurant["grade"].fillna("Not Yet Graded")
+    restaurant["restaurant_name"] = restaurant["restaurant_name"].apply(lambda x: custom_title(x, preserve_chars="'"))
+    restaurant['address'] = restaurant.apply(lambda row: street_name_converter(row['street']) if pd.isna(row['building']) else f"{row['building']} {street_name_converter(row['street'])}", axis=1)
+    restaurant["img_src"] = restaurant["grade"].apply(lambda x: img_link(x))
+    restaurant = restaurant.drop(columns=["building","street"])
     violation = df[["permit_number","inspection_date",
                                         "inspection_type","action", "violation_code",
                                         "violation_description","critical_flag","score","grade","grade_date"]]
@@ -191,9 +224,7 @@ except KeyError:
 SCOPES = ('https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive')
 credentials = service_account.Credentials.from_service_account_info(json.loads(json_file, strict=False), scopes=SCOPES)
 gc = pygsheets.authorize(custom_credentials=credentials)
-processed_data = data_preprocessing(restaurant_inspection, gc)
-restaurant = processed_data[0]
-violation = processed_data[1]
+restaurant, violation = data_preprocessing(restaurant_inspection, gc)
 
 workbook = gc.open('nyc_restaurant_inspections')
 for worksheet in workbook:
