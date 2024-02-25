@@ -188,7 +188,7 @@ def data_preprocessing(df, gc):
     
     def street_name_converter(street):
         words = street.split()
-        corrected_words = [word.capitalize() if word.isalpha() else word.replace("ST","st").replace("Nd","nd").replace("Rd","rd").replace("Th","th") for word in words]
+        corrected_words = [word.capitalize() if word.isalpha() else word.replace("ST","st").replace("ND","nd").replace("RD","rd").replace("TH","th") for word in words]
         return ' '.join(corrected_words)
         
     workbook = gc.open('nyc_restaurant_inspections') 
