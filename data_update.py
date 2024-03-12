@@ -206,7 +206,8 @@ def data_preprocessing(df, gc):
     restaurant = pd.merge(restaurant, gradable_inspections[["permit_number","grade"]],on="permit_number",how="left")
     restaurant["grade"] = restaurant["grade"].fillna("Not Yet Graded")
     restaurant["restaurant_name"] = restaurant["restaurant_name"].apply(lambda x: custom_title(x, preserve_chars="'"))
-    restaurant['address'] = restaurant.apply(lambda row: street_name_converter(row['street']) if pd.isna(row['building']) else f"{row['building']} {street_name_converter(row['street'])}", axis=1)
+    restaurant["street"] = restaurant["street"].apply(lambda x: street_name_converter(x))
+    restaurant['address'] = restaurant.apply(lambda row: row['street'] if pd.isna(row['building']) else f"{row['building']} {row['street']}", axis=1)
     restaurant["img_src"] = restaurant["grade"].apply(lambda x: img_link(x))
     restaurant = restaurant.drop(columns=["building"])
     violation = df[["permit_number","inspection_date",
