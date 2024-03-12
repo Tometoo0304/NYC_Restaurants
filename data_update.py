@@ -208,7 +208,7 @@ def data_preprocessing(df, gc):
     restaurant["restaurant_name"] = restaurant["restaurant_name"].apply(lambda x: custom_title(x, preserve_chars="'"))
     restaurant['address'] = restaurant.apply(lambda row: street_name_converter(row['street']) if pd.isna(row['building']) else f"{row['building']} {street_name_converter(row['street'])}", axis=1)
     restaurant["img_src"] = restaurant["grade"].apply(lambda x: img_link(x))
-    restaurant = restaurant.drop(columns=["building","street"])
+    restaurant = restaurant.drop(columns=["building"])
     violation = df[["permit_number","inspection_date",
                                         "inspection_type","action", "violation_code",
                                         "violation_description","critical_flag","score","grade","grade_date"]]
