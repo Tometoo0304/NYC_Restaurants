@@ -189,7 +189,71 @@ def data_preprocessing(df, gc):
     def street_name_converter(street):
         words = street.split()
         corrected_words = [word.capitalize() if word.isalpha() else word.replace("ST","st").replace("ND","nd").replace("RD","rd").replace("TH","th") for word in words]
-        return ' '.join(corrected_words)
+        street = ' '.join(corrected_words)
+        address_split = street.split()
+        for word in address_split:
+            if word == "West":
+                street = street.replace("West","W")
+            elif word == "East":
+                street = street.replace("East","E")
+            elif word == "Street":
+                street = street.replace("Street","St")
+            elif word == "Avenue":
+                street = street.replace("Avenue","Ave")
+            elif word == "Boulevard":
+                street = street.replace("Boulevard","Blvd")
+            elif word == "Road":
+                street = street.replace("Road", "Rd")
+            elif word == "Parkway":
+                street = street.replace("Parkway", "Pkwy")
+            elif word == "Turnpike":
+                street = street.replace("Turnpike","Tpke")
+            elif word == "Saint":
+                street = street.replace("Saint","St")
+            elif word == "Wyckoff":
+                street = street.replace("Wyckoff","Wyck")
+            elif word == "Expressway":
+                street = street.replace("Expressway", "Expy")
+            elif word == "Place":
+                street = street.replace("Place","Pl")
+            elif word ==  "Lane":
+                street = street.replace("Lane","Ln")
+            elif word == "B'WAY":
+                street = street.replace("B'WAY","Broadway")
+            elif word == "Bldg":
+                street = street.replace("Bldg","Building")
+            elif word == "intairp":
+                street = street.replace("intairp","International Airport")
+            elif word == "Arvl":
+                street = street.replace("Arvl", "Arrival")
+            elif word == "Highway":
+                street = street.replace("Highway","Hwy")
+            elif word == "Ctr":
+                street = street.replace("Ctr","Center")
+            elif word == "Drive":
+                street = street.replace("Drive","Dr")
+            elif word == "Plz":
+                street = street.replace("Plz","Plaza")
+            elif word == "Terrace":
+                street = street.replace("Terrace","Ter")
+            elif word == "Square":
+                street = street.replace("Square","Sq")
+            elif word == "Traverse":
+                street = street.replace("Traverse","Transverse")
+            else:
+                try:
+                    number = int(word)
+                    if number % 10 == 1:
+                        street = street.replace(word, str(number)+"st")
+                    elif number % 10 == 2:
+                        street = street.replace(word, str(number)+"nd")
+                    elif number % 10 == 3:
+                        street = street.replace(word, str(number)+"rd")
+                    else:
+                        street = street.replace(word, str(number)+"th")
+                except ValueError:
+                    continue
+        return street
         
     workbook = gc.open('nyc_restaurant_inspections') 
     prev_restaurant = workbook[0].get_as_df(numerize=False)
