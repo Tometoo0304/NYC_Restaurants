@@ -240,6 +240,8 @@ def data_preprocessing(df, gc):
                 street = street.replace("Square","Sq")
             elif word == "Traverse":
                 street = street.replace("Traverse","Transverse")
+            elif word == "Jfk":
+                street = street.replace("Jfk","John F. Kennedy")
             else:
                 try:
                     number = int(word)
